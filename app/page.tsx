@@ -2,14 +2,13 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import dynamic from "next/dynamic";
 import { useLang, bi } from "@/lib/i18n";
 import {
   brand, nav, hero, metamorphLab, evolution, fromPackToGame, ranch, finalCta, footer, LINKS,
 } from "@/lib/content";
 import { creatures, filterGroups, matchesFilter } from "@/lib/creatures";
-import { packs, bestSellers, legendaryPacks, startHerePack, completeCollection } from "@/lib/packs";
+import { bestSellers, legendaryPacks, startHerePack, completeCollection } from "@/lib/packs";
 import { stories, roadmap, nextPackIdeas, ranchLog } from "@/lib/collections";
 import Background from "@/components/Background";
 import Boot from "@/components/Boot";
@@ -17,6 +16,7 @@ import Nav from "@/components/Nav";
 import { Reveal } from "@/components/motion";
 import { Corners, Head, P, dOf, acClass, CreatureCard, PackCard } from "@/components/shared";
 import EvolutionSlider from "@/components/EvolutionSlider";
+import StarterPackVisual from "@/components/StarterPackVisual";
 
 const Creature3D = dynamic(() => import("@/components/Creature3D"), { ssr: false });
 
@@ -41,39 +41,54 @@ export default function Page() {
         {/* ═══ 00 / HERO ═══ */}
         <section id="hero" className="ac-cyan" style={{ position: "relative", minHeight: "100svh", display: "flex", alignItems: "center", overflow: "hidden" }}>
           <div className="grid-floor" />
-          <div className="wrap" style={{ position: "relative", zIndex: 3, paddingTop: 96, paddingBottom: 60 }}>
-            <div className="font-mono" style={{ display: "flex", flexWrap: "wrap", gap: "8px 18px", fontSize: "0.72rem", color: "var(--text-faint)", letterSpacing: "0.14em", marginBottom: "1.4rem" }}>
-              {hero.systemBar.map((s, i) => <span key={i}><span style={{ color: i === 1 ? "var(--magenta)" : "var(--cyan)" }}>//</span> {s}</span>)}
+          <div className="wrap hero-grid" style={{ position: "relative", zIndex: 3, paddingTop: 96, paddingBottom: 60 }}>
+            <div className="hero-copy">
+              <div className="font-mono" style={{ display: "flex", flexWrap: "wrap", gap: "8px 18px", fontSize: "0.72rem", color: "var(--text-faint)", letterSpacing: "0.14em", marginBottom: "1rem" }}>
+                {hero.systemBar.map((s, i) => <span key={i}><span style={{ color: i === 1 ? "var(--magenta)" : "var(--cyan)" }}>{"//"}</span> {s}</span>)}
+              </div>
+
+              <div className="hero-eyebrow">◆ {t(hero.eyebrow)}</div>
+
+              <div className="font-mono hero-evo-strip">
+                {hero.evoStrip.map((s, i) => (
+                  <span key={s} style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <span className={i === 0 ? "neon" : ""} style={{ color: i === 0 ? "var(--cyan)" : "var(--text-faint)" }}>{s}</span>
+                    {i < hero.evoStrip.length - 1 && <span style={{ color: "var(--text-faint)" }}>→</span>}
+                  </span>
+                ))}
+              </div>
+
+              <h1 className="hero-title">
+                <span className="chrome">{t(hero.headline)}</span>
+              </h1>
+
+              <P style={{ marginTop: "1.25rem", color: "var(--text)", fontSize: "1.04rem", maxWidth: 650 }}>{t(hero.body)}</P>
+
+              <div className="hero-actions">
+                {hero.ctas.map((c, i) => c.kind === "route" ? (
+                  <Link key={i} className={`btn ${c.solid ? "btn-solid" : ""} ${acClass(c.accent)}`} href={c.to}>
+                    {c.solid ? "▸ " : ""}{t(c.label)}
+                  </Link>
+                ) : (
+                  <a key={i} className={`btn ${c.solid ? "btn-solid" : ""} ${acClass(c.accent)}`} href={`#${c.to}`} onClick={(e) => { e.preventDefault(); document.getElementById(c.to)?.scrollIntoView({ behavior: "smooth" }); }}>
+                    {c.solid ? "▸ " : ""}{t(c.label)}
+                  </a>
+                ))}
+              </div>
+
+              <div className="hero-proof">
+                {hero.proof.map((p, i) => <span key={i} className="chip">◉ {t(p)}</span>)}
+              </div>
             </div>
 
-            <div className="font-mono" style={{ display: "flex", gap: 10, alignItems: "center", marginBottom: "1.2rem", fontSize: "0.9rem", letterSpacing: "0.2em", color: "var(--text-dim)" }}>
-              {hero.evoStrip.map((s, i) => (
-                <span key={s} style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                  <span className={i === 0 ? "neon" : ""} style={{ color: i === 0 ? "var(--cyan)" : "var(--text-faint)" }}>{s}</span>
-                  {i < hero.evoStrip.length - 1 && <span style={{ color: "var(--text-faint)" }}>→</span>}
-                </span>
-              ))}
-            </div>
-
-            <h1 className="hero-title" style={{ fontFamily: "var(--font-hero)", fontWeight: 900, lineHeight: 0.96, textTransform: "uppercase", fontSize: "clamp(2.6rem, 8vw, 6rem)" }}>
-              <span className="chrome">{t(hero.headline)}</span>
-            </h1>
-
-            <P style={{ marginTop: "1.4rem", color: "var(--text)", fontSize: "1.08rem", maxWidth: 640 }}>{t(hero.body)}</P>
-
-            <div style={{ display: "flex", gap: 14, flexWrap: "wrap", marginTop: "2.2rem" }}>
-              {hero.ctas.map((c, i) => (
-                <a key={i} className={`btn ${c.solid ? "btn-solid" : ""} ${acClass(c.accent)}`} href={`#${c.to}`} onClick={(e) => { e.preventDefault(); document.getElementById(c.to)?.scrollIntoView({ behavior: "smooth" }); }}>
-                  {c.solid ? "▸ " : ""}{t(c.label)}
-                </a>
-              ))}
-            </div>
-
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "8px 20px", marginTop: "2.4rem" }}>
-              {hero.proof.map((p, i) => <span key={i} className="chip">◉ {t(p)}</span>)}
-            </div>
-
-            <div className="font-mono blink" style={{ marginTop: "2.6rem", fontSize: "0.7rem", color: "var(--text-faint)", letterSpacing: "0.2em" }}>↓ {t(hero.scrollHint)}</div>
+            <Link href="/packs/creature-starter-pack" className="hero-product ac-green" aria-label={t({ en: "View the Creature Starter Pack", ja: "Creature Starter Packを見る" })}>
+              <div className="hero-product__label">◆ START HERE / REAL PACK</div>
+              <StarterPackVisual priority />
+              <div className="hero-product__footer">
+                <span>{t({ en: "3 CREATURES · COMMERCIAL USE", ja: "3体入り · 商用利用OK" })}</span>
+                <strong>{t({ en: "VIEW PACK →", ja: "中身を見る →" })}</strong>
+              </div>
+            </Link>
           </div>
         </section>
 
@@ -201,7 +216,7 @@ export default function Page() {
               <div className="holo ac-green anim-border" style={{ padding: "1.8rem", marginBottom: "2.4rem", display: "grid", gridTemplateColumns: "minmax(0,1fr) minmax(0,1.3fr)", gap: 20 }}>
                 <Corners />
                 <div style={{ position: "relative", width: "100%", aspectRatio: "1/1", borderRadius: 4, overflow: "hidden", background: "rgba(0,0,0,0.3)" }}>
-                  <PackImage src={starter.image} alt={starter.name} />
+                  <StarterPackVisual />
                 </div>
                 <div>
                   <h3 className="font-display neon" style={{ fontSize: "1.3rem", fontWeight: 800, marginBottom: 8 }}>{starter.name}</h3>
@@ -306,10 +321,11 @@ export default function Page() {
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))", gap: 12, marginBottom: "2rem" }}>
               {ranch.phase1.map((p, i) => (
                 <Reveal key={i} delay={dOf(i)} className="ac-green">
-                  <div className="holo" style={{ padding: "1.1rem 1.3rem", textAlign: "center" }}>
+                  <a href={p.href} target={p.external ? "_blank" : undefined} rel={p.external ? "noopener noreferrer" : undefined} className="holo ranch-link" style={{ padding: "1.1rem 1.3rem", textAlign: "center" }}>
                     <Corners />
-                    <span style={{ color: "var(--text)", fontSize: "0.92rem" }}>{t(p)}</span>
-                  </div>
+                    <span style={{ color: "var(--text)", fontSize: "0.92rem" }}>{t(p.label)}</span>
+                    <span aria-hidden="true" style={{ color: "var(--green)" }}>↗</span>
+                  </a>
                 </Reveal>
               ))}
             </div>
@@ -394,10 +410,6 @@ export default function Page() {
       </main>
     </>
   );
-}
-
-function PackImage({ src, alt }: { src: string; alt: string }) {
-  return <Image src={src} alt={alt} fill sizes="320px" style={{ objectFit: "contain" }} />;
 }
 
 function SynchroNoteInline({ text }: { text: import("@/lib/i18n").Bi }) {

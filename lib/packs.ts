@@ -33,7 +33,7 @@ export const packs: Pack[] = [
     checkoutId: "creature-starter-pack",
     group: "start-here",
     name: "CREATURE STARTER PACK",
-    image: "/monsters/dragon_starter_cover.png",
+    image: "/monsters/dragon_fire.png",
     priceUsd: 9.9,
     forWho: bi(
       "Anyone who wants to see what evolution looks like before committing to a full pack.",

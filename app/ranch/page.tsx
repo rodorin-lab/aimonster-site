@@ -21,10 +21,11 @@ export default function RanchPage() {
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))", gap: 12, marginBottom: "2rem" }}>
           {ranch.phase1.map((p, i) => (
             <Reveal key={i} delay={dOf(i)}>
-              <div className="holo" style={{ padding: "1.1rem 1.3rem", textAlign: "center" }}>
+              <a className="holo ranch-link" href={p.href} target={p.external ? "_blank" : undefined} rel={p.external ? "noreferrer" : undefined}>
                 <Corners />
-                <span style={{ color: "var(--text)", fontSize: "0.92rem" }}>{t(p)}</span>
-              </div>
+                <span style={{ color: "var(--text)", fontSize: "0.92rem" }}>{t(p.label)}</span>
+                <span aria-hidden="true">↗</span>
+              </a>
             </Reveal>
           ))}
         </div>

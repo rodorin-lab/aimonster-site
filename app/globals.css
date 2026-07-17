@@ -92,6 +92,104 @@ body {
 .wrap { width: 100%; max-width: var(--maxw); margin: 0 auto; padding: 0 clamp(1rem, 4vw, 2.5rem); }
 .section { position: relative; padding: clamp(4.5rem, 11vw, 8.5rem) 0; z-index: 2; }
 
+/* ── Conversion hero ─────────────────────────────────────────── */
+.hero-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(360px, 0.95fr);
+  gap: clamp(2rem, 5vw, 4.5rem);
+  align-items: center;
+}
+.hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 0.6rem;
+  margin-bottom: 1rem; color: var(--green); font-family: var(--font-mono);
+  font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase;
+  text-shadow: 0 0 18px rgba(var(--green-rgb), 0.42);
+}
+.hero-evo-strip {
+  display: flex; gap: 8px; align-items: center; margin-bottom: 1rem;
+  font-size: 0.8rem; letter-spacing: 0.15em; color: var(--text-dim);
+}
+.hero-title {
+  max-width: 760px; margin: 0; font-family: var(--font-hero); font-weight: 900;
+  line-height: 1.02; text-transform: uppercase; font-size: clamp(2.55rem, 5.8vw, 5.5rem);
+  text-wrap: balance;
+}
+.hero-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 1.8rem; }
+.hero-proof { display: flex; flex-wrap: wrap; gap: 8px 14px; margin-top: 1.5rem; }
+.hero-product {
+  display: block; position: relative; padding: 1rem; color: inherit; text-decoration: none;
+  background: linear-gradient(145deg, rgba(0,255,90,0.08), rgba(0,0,0,0.58));
+  border: 1px solid rgba(var(--green-rgb), 0.48);
+  box-shadow: 0 0 70px rgba(var(--green-rgb), 0.10), inset 0 0 50px rgba(0,0,0,0.55);
+  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+}
+.hero-product:hover {
+  transform: translateY(-6px); border-color: rgba(var(--green-rgb), 0.9);
+  box-shadow: 0 18px 70px rgba(var(--green-rgb), 0.2), inset 0 0 50px rgba(0,0,0,0.5);
+}
+.hero-product__label {
+  margin: 0 0 0.65rem; color: var(--green); font-family: var(--font-mono);
+  font-size: 0.68rem; letter-spacing: 0.17em;
+}
+.hero-product__footer {
+  display: flex; justify-content: space-between; align-items: center; gap: 12px;
+  margin-top: 0.75rem; color: var(--text-dim); font-family: var(--font-mono);
+  font-size: 0.67rem; letter-spacing: 0.06em;
+}
+.hero-product__footer strong { color: var(--green); }
+
+/* Accurate, reusable preview built from the assets actually in the pack. */
+.starter-visual {
+  display: flex; flex-direction: column; width: 100%; height: 100%; min-height: 0;
+  padding: clamp(0.7rem, 2vw, 1rem); background:
+    linear-gradient(rgba(var(--green-rgb), 0.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(var(--green-rgb), 0.055) 1px, transparent 1px),
+    #070b10;
+  background-size: 22px 22px; border: 1px solid rgba(var(--green-rgb), 0.34);
+}
+.starter-visual__topline {
+  display: flex; justify-content: space-between; gap: 10px; padding-bottom: 0.55rem;
+  border-bottom: 1px solid rgba(var(--green-rgb), 0.35); color: var(--green);
+  font-family: var(--font-display); font-size: clamp(0.68rem, 1.5vw, 0.9rem);
+  font-weight: 800; letter-spacing: 0.07em;
+}
+.starter-visual__roster {
+  display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 8px;
+  flex: 1; min-height: 0; padding: 0.75rem 0;
+}
+.starter-visual__slot {
+  display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
+  min-width: 0; padding: 0.4rem; border: 1px solid rgba(255,255,255,0.09);
+  background: rgba(0,0,0,0.34); color: var(--text-dim); font-family: var(--font-mono);
+  font-size: clamp(0.5rem, 1vw, 0.65rem); line-height: 1.2; text-align: center;
+}
+.starter-visual__image { position: relative; width: 100%; flex: 1; min-height: 80px; }
+.starter-visual__mystery {
+  justify-content: center; border-style: dashed; color: var(--magenta);
+  background: radial-gradient(circle, rgba(var(--magenta-rgb),0.13), rgba(0,0,0,0.3) 65%);
+}
+.starter-visual__question {
+  display: block; font-family: var(--font-hero); font-size: clamp(2.5rem, 7vw, 5rem);
+  font-weight: 900; line-height: 1; text-shadow: 0 0 24px rgba(var(--magenta-rgb), 0.55);
+}
+.starter-visual__files { display: flex; flex-wrap: wrap; gap: 5px; }
+.starter-visual__files span {
+  padding: 0.24rem 0.45rem; border: 1px solid rgba(var(--green-rgb), 0.28);
+  color: var(--green); font-family: var(--font-mono); font-size: clamp(0.48rem, 1vw, 0.6rem);
+  letter-spacing: 0.04em;
+}
+.ranch-link {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  min-height: 62px; text-decoration: none;
+}
+.model-fallback { position: absolute; inset: 0; background: radial-gradient(circle, rgba(var(--orange-rgb),0.08), #05070d 72%); }
+.model-fallback__message {
+  position: absolute; left: 50%; bottom: 12px; transform: translateX(-50%); z-index: 2;
+  width: max-content; max-width: calc(100% - 24px); padding: 0.4rem 0.65rem;
+  color: var(--text-dim); background: rgba(5,7,13,0.82); border: 1px solid rgba(var(--orange-rgb),0.28);
+  font-size: 0.68rem; text-align: center;
+}
+
 .hr-neon { height: 1px; border: 0; background: linear-gradient(90deg, transparent, rgba(var(--ac-rgb), 0.6), transparent); box-shadow: 0 0 12px rgba(var(--ac-rgb), 0.3); }
 
 /* ── Holographic card ─────────────────────────────────────────── */
@@ -232,13 +330,20 @@ body {
 
 /* ── Boot overlay ─────────────────────────────────────────────── */
 .boot { position: fixed; inset: 0; z-index: 100; background: #05070d; display: flex; align-items: center; justify-content: center; }
-.boot.done { opacity: 0; visibility: hidden; transition: opacity 0.6s ease, visibility 0.6s ease; }
+.boot.done { opacity: 0; visibility: hidden; transition: opacity 0.2s ease, visibility 0.2s ease; }
 
 a:focus-visible, button:focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; }
 
 /* ── Responsive ───────────────────────────────────────────────── */
 @media (max-width: 760px) {
   .two-col { grid-template-columns: 1fr !important; }
+  .hero-grid { grid-template-columns: 1fr; gap: 2rem; padding-top: 92px !important; }
+  .hero-title { font-size: clamp(2.35rem, 12vw, 4.2rem); line-height: 1.04; }
+  .hero-actions .btn { width: 100%; justify-content: center; }
+  .hero-product { padding: 0.75rem; }
+  .hero-product__footer { align-items: flex-start; flex-direction: column; }
+  .starter-visual__roster { gap: 4px; }
+  .starter-visual__slot { padding: 0.25rem; }
 }
 
 /* ── Membership / Admin shells ────────────────────────────────── */

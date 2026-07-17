@@ -2,19 +2,11 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useSession } from "next-auth/react";
 import { useLang } from "@/lib/i18n";
 import { nav, brand, LINKS } from "@/lib/content";
 
-// Membership/auth code is fully built (see /membership, /auth) but production
-// has no real Postgres DB wired up yet — signup/login would just 500. Hide
-// the entry point until DATABASE_URL points at a real database, then flip
-// this back to true (see CLAUDE.md "Membership architecture").
-const MEMBERSHIP_LIVE = false;
-
 export default function Nav() {
   const { t, lang, toggle } = useLang();
-  const { data: session } = useSession();
   const [active, setActive] = useState("hero");
   const [progress, setProgress] = useState(0);
   const [open, setOpen] = useState(false);
@@ -65,11 +57,6 @@ export default function Nav() {
             {lang === "en" ? "EN" : "日本語"}
           </button>
           <a href={LINKS.github} target="_blank" rel="noopener noreferrer" className="font-mono hidden sm:inline-flex" style={{ fontSize: 12, color: "var(--text-dim)", textDecoration: "none", letterSpacing: "0.08em" }}>▸ GITHUB</a>
-          {MEMBERSHIP_LIVE && (
-            <Link href={session?.user ? "/membership" : "/auth/signin"} className="font-mono" style={{ fontSize: 12, color: "var(--magenta)", textDecoration: "none", letterSpacing: "0.06em", border: "1px solid rgba(255,46,224,0.35)", borderRadius: 2, padding: "5px 10px" }}>
-              {session?.user ? `🐾 ${t({ en: "MY PAGE", ja: "マイページ" })}` : t({ en: "SIGN IN", ja: "ログイン" })}
-            </Link>
-          )}
           <button onClick={() => setOpen((o) => !o)} className="lg:hidden" aria-label="Menu" style={{ background: "none", border: 0, color: "var(--cyan)", cursor: "pointer", fontSize: 20 }}>{open ? "✕" : "≡"}</button>
         </div>
       </div>

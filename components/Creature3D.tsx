@@ -6,6 +6,7 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 import * as THREE from "three";
+import Image from "next/image";
 import { useLang } from "@/lib/i18n";
 
 // Physically-based materials (metalness/roughness) reflect an environment
@@ -18,9 +19,14 @@ function Environment() {
   useEffect(() => {
     const pmrem = new THREE.PMREMGenerator(gl);
     const envTex = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+    // The scene is the external Three.js render target synchronized by this effect.
+    // eslint-disable-next-line react-hooks/immutability
     scene.environment = envTex;
     pmrem.dispose();
-    return () => { envTex.dispose(); scene.environment = null; };
+    return () => {
+      envTex.dispose();
+      scene.environment = null;
+    };
   }, [gl, scene]);
   return null;
 }
@@ -69,16 +75,32 @@ function Controls() {
 
 export default function Creature3D({ src }: { src: string }) {
   const [failed, setFailed] = useState(false);
+  const [webglAvailable, setWebglAvailable] = useState<boolean | null>(null);
   const { t } = useLang();
 
-  if (failed) {
+  useEffect(() => {
+    let available = false;
+    try {
+      const canvas = document.createElement("canvas");
+      available = Boolean(canvas.getContext("webgl2") || canvas.getContext("webgl"));
+    } catch { /* use the static preview */ }
+    const timer = window.setTimeout(() => setWebglAvailable(available), 0);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (failed || webglAvailable === false) {
     return (
-      <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", textAlign: "center", padding: "1rem" }}>
-        <span className="font-mono" style={{ color: "var(--text-faint)", fontSize: "0.78rem" }}>
-          {t({ en: "3D model could not load in this browser.", ja: "このブラウザでは3Dモデルを読み込めませんでした。" })}
+      <div className="model-fallback">
+        <Image src="/monsters/dragon_fire.png" alt="Fire Dragon preview" fill sizes="(max-width: 760px) 90vw, 900px" style={{ objectFit: "contain" }} />
+        <span className="font-mono model-fallback__message">
+          {t({ en: "Static preview · 3D is unavailable in this browser", ja: "静止画プレビュー · このブラウザでは3D表示を利用できません" })}
         </span>
       </div>
     );
+  }
+
+  if (webglAvailable === null) {
+    return <div className="model-fallback"><Image src="/monsters/dragon_fire.png" alt="Fire Dragon preview" fill priority sizes="(max-width: 760px) 90vw, 900px" style={{ objectFit: "contain" }} /></div>;
   }
 
   return (
