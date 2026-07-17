@@ -9,7 +9,7 @@ import { useLang } from "@/lib/i18n";
 function VerifyEmailBody() {
   const { t } = useLang();
   const params = useSearchParams();
-  const justSent = params.get("sent") === "1";
+  const justSent = params?.get("sent") === "1";
 
   return (
     <AuthShell title={t({ en: "CHECK YOUR EMAIL", ja: "メールを確認してください" })}>

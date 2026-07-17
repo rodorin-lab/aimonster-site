@@ -9,8 +9,8 @@ function ResetPasswordForm() {
   const { t } = useLang();
   const router = useRouter();
   const params = useSearchParams();
-  const token = params.get("token") || "";
-  const email = params.get("email") || "";
+  const token = params?.get("token") || "";
+  const email = params?.get("email") || "";
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState(false);
