@@ -11,6 +11,7 @@ import { findStory } from "@/lib/collections";
 import { PageShell } from "@/components/PageShell";
 import { Reveal } from "@/components/motion";
 import { Corners, P } from "@/components/shared";
+import StarterPackVisual from "@/components/StarterPackVisual";
 
 const Creature3D = dynamic(() => import("@/components/Creature3D"), { ssr: false });
 
@@ -51,17 +52,21 @@ export default function PackDetail({ pack }: { pack: Pack }) {
   return (
     <PageShell accent={pack.accent}>
       <div className="wrap" style={{ padding: "clamp(2.5rem,7vw,4.5rem) clamp(1rem,4vw,2.5rem) 5rem", maxWidth: 940 }}>
-        <Reveal><Link href="/#packs" className="font-mono" style={{ fontSize: "0.72rem", color: "var(--text-dim)", textDecoration: "none", letterSpacing: "0.1em" }}>← {t({ en: "Packs", ja: "パック" })}</Link></Reveal>
+        <Link href="/#packs" className="font-mono" style={{ fontSize: "0.72rem", color: "var(--text-dim)", textDecoration: "none", letterSpacing: "0.1em" }}>← {t({ en: "Packs", ja: "パック" })}</Link>
 
         {/* Hero */}
         <div style={{ display: "grid", gridTemplateColumns: "minmax(0,1fr) minmax(0,1.1fr)", gap: 28, marginTop: 20, marginBottom: "2.6rem" }} className="researcher-grid">
-          <Reveal>
+          <div>
             <div className={legend ? "holo-legend" : "holo"} style={{ position: "relative", aspectRatio: "1/1" }}>
               <Corners />
-              <Image src={pack.image} alt={pack.name} fill sizes="(max-width: 900px) 90vw, 420px" style={{ objectFit: "contain" }} />
+              {pack.slug === "creature-starter-pack" ? (
+                <StarterPackVisual priority />
+              ) : (
+                <Image src={pack.image} alt={pack.name} fill sizes="(max-width: 900px) 90vw, 420px" priority style={{ objectFit: "contain" }} />
+              )}
             </div>
-          </Reveal>
-          <Reveal delay={1}>
+          </div>
+          <div>
             <h1 className={`font-display ${legend ? "chrome-gold" : "chrome"}`} style={{ fontSize: "clamp(1.7rem,4.2vw,2.4rem)", fontWeight: 800, marginBottom: 10 }}>{pack.name}</h1>
             <P style={{ fontSize: "1rem", marginBottom: 16 }}>{t(pack.forWho)}</P>
             <div className="font-display neon" style={{ fontSize: "2rem", fontWeight: 800, marginBottom: 18 }}>
@@ -75,7 +80,7 @@ export default function PackDetail({ pack }: { pack: Pack }) {
               <span className="chip">{t({ en: "COMING WITH PHASE 4", ja: "Phase 4で提供予定" })}</span>
             )}
             {error && <p style={{ color: "var(--orange)", fontSize: "0.85rem", marginTop: 10 }}>{error}</p>}
-          </Reveal>
+          </div>
         </div>
 
         {/* SEE THE EVOLUTION */}

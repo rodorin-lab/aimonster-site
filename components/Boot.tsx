@@ -23,12 +23,15 @@ export default function Boot() {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     let seen = false;
     try { seen = sessionStorage.getItem("amf-booted") === "1"; } catch { /* ignore */ }
-    if (reduced || seen) { setDone(true); return; }
+    if (reduced || seen) {
+      const timer = window.setTimeout(() => setDone(true), 0);
+      return () => clearTimeout(timer);
+    }
     try { sessionStorage.setItem("amf-booted", "1"); } catch { /* ignore */ }
 
     const timers: number[] = [];
-    BOOT.forEach((_, i) => { timers.push(window.setTimeout(() => setLine(i + 1), 340 * (i + 1))); });
-    timers.push(window.setTimeout(() => setDone(true), 340 * BOOT.length + 550));
+    BOOT.forEach((_, i) => { timers.push(window.setTimeout(() => setLine(i + 1), 120 * (i + 1))); });
+    timers.push(window.setTimeout(() => setDone(true), 120 * BOOT.length + 100));
     return () => timers.forEach(clearTimeout);
   }, []);
 

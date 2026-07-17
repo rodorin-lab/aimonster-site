@@ -34,15 +34,16 @@ export const nav: NavItem[] = [
 export const hero = {
   systemBar: ["AI MONSTER FACTORY", "CREATURE EVOLUTION LAB", "STATUS: GROWING"],
   evoStrip: ["PIXEL", "ANIME", "3D", "GAME"],
-  headline: bi("CREATURES EVOLVE.", "クリーチャーは、進化する。"),
+  eyebrow: bi("GAME ASSETS FOR INDIE DEVELOPERS", "インディーゲーム開発者向け・商用利用OK"),
+  headline: bi("CREATURES FOR YOUR GAME.", "物語を持つモンスターを、すぐゲームへ。"),
   body: bi(
-    "A story-driven creature evolution lab where monsters evolve from pixel art to anime art, 3D models, and game-ready assets.\n\nDiscover a creature, follow its evolution, and bring it into your game or creative world.",
-    "名前と物語を持つクリーチャーが、\nPIXELからANIME、3D、GAMEへ進化するクリーチャー進化ラボ。\n\nお気に入りの一体を見つけて、\n進化を追いかけて、\nあなたのゲームや創作の世界へ連れていこう。",
+    "Download story-driven monster assets as PNG, sprite sheets, JSON, and GLB. Use them as enemies, bosses, or companions in your game.\n\nStart with 3 creatures for $9.90 — commercial use included.",
+    "名前と物語を持つモンスター素材を、PNG・スプライトシート・JSON・GLBで提供。敵、ボス、仲間としてゲームへ組み込めます。\n\nまずは3体入り $9.90から。商用利用ライセンス込み。",
   ),
   ctas: [
-    { label: bi("Explore the Codex", "図鑑を見る"), to: "codex", accent: "magenta" as Accent, solid: true },
-    { label: bi("Browse Packs", "パックを見る"), to: "packs", accent: "orange" as Accent, solid: false },
-    { label: bi("See the Evolution", "進化を見る"), to: "evolution", accent: "cyan" as Accent, solid: false },
+    { label: bi("View Starter Pack — $9.90", "Starter Packを見る — $9.90"), to: "/packs/creature-starter-pack", accent: "green" as Accent, solid: true, kind: "route" as const },
+    { label: bi("Meet Fire Dragon for free", "無料でFire Dragonを見る"), to: "/creatures/fire-dragon", accent: "magenta" as Accent, solid: false, kind: "route" as const },
+    { label: bi("Explore the Codex", "図鑑を見る"), to: "codex", accent: "cyan" as Accent, solid: false, kind: "anchor" as const },
   ],
   proof: [
     bi("COMMERCIAL USE", "商用利用対応"),
@@ -98,7 +99,7 @@ export const evolution = {
 
 // ── 04 / FROM PACK TO GAME ────────────────────────────────────────
 export const fromPackToGame = {
-  eyebrow: "04 / FROM PACK TO GAME",
+  eyebrow: "FIELD GUIDE / FROM PACK TO GAME",
   heading: bi("FROM PACK TO YOUR WORLD.", "ダウンロードして、自分の世界へ。"),
   steps: [
     { n: "01", k: "CHOOSE", v: bi("Pick a creature.", "クリーチャーを選ぶ。") },
@@ -131,11 +132,11 @@ export const ranch = {
     "まだ会員制度はありません — 今のラボで起きていることを追いかける、正直な方法だけ。",
   ),
   phase1: [
-    bi("Read Stories", "物語を読む"),
-    bi("Check the Roadmap", "ロードマップを見る"),
-    bi("See new creatures", "新クリーチャーを見る"),
-    bi("Follow active socials", "稼働中のSNSをフォロー"),
-  ] as Bi[],
+    { label: bi("Read Stories", "物語を読む"), href: "#stories" },
+    { label: bi("Check the Roadmap", "ロードマップを見る"), href: "#roadmap" },
+    { label: bi("See new creatures", "新クリーチャーを見る"), href: "#codex" },
+    { label: bi("Follow the build on GitHub", "GitHubで制作を追う"), href: LINKS.github, external: true },
+  ] as { label: Bi; href: string; external?: boolean }[],
   future: {
     label: bi("LATER (not yet live)", "今後(まだ実装されていません)"),
     phase2: bi("Free Ranch account — favorites, voting, watchlist", "無料牧場アカウント — お気に入り、投票、ウォッチリスト"),
