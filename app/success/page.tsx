@@ -12,7 +12,7 @@ import { Corners } from "@/components/shared";
 function SuccessInner() {
   const { t } = useLang();
   const params = useSearchParams();
-  const sessionId = params.get("session_id");
+  const sessionId = params?.get("session_id");
   const [state, setState] = useState<"checking" | "paid" | "unpaid" | "error">("checking");
   const [productId, setProductId] = useState<string | null>(null);
 
