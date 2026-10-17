@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="ja">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>LUMINA FOREST — 星灯りの森</title>
+<link rel="stylesheet" href="style.css"></head>
+<body>
+<main>
+<header><a class="brand" href="#"><span class="brand-icon">✦</span><span>LUMINA<span class="brand-sub">FOREST CHRONICLES</span></span></a><span class="tag">LOCAL AI ART × BROWSER GAME</span><button id="sound" aria-pressed="false">♫ 音 OFF</button></header>
+<section class="intro"><div><p class="eyebrow">A LITTLE MAGIC, MADE TOGETHER</p><h1>星灯りの森<span> — LUMINA FOREST</span></h1><p class="subtitle">忘れられた森に、もう一度、光を。</p></div><button id="restart" class="ghost">↻ 最初から</button></section>
+<section class="stage" aria-label="ゲームエリア">
+<canvas id="game" width="1280" height="800" tabindex="0" aria-label="見下ろし型魔法アクション。WASDで移動、Spaceでダッシュ。魔法は自動発射。"></canvas>
+<div id="overlay" class="overlay"><div class="panel">
+<p class="eyebrow" id="chapter">CHAPTER 01 / THE AWAKENING</p><span class="sigil">✧</span><h2 id="heading">小さな光の、大きな冒険。</h2><p id="description">あなたは森に迷い込んだ、小さな魔法使い。<br>魔物を倒して8つの光の結晶を集め、<br>眠れる守護者を闇から解き放とう。</p>
+<button id="start" class="primary">森へ旅立つ <span>→</span></button><p class="hint" id="hint">WASD / 矢印で移動 · 魔法は自動 · Spaceで回避</p>
+</div></div>
+<div id="loading" class="loading">✦ 森の絵を読み込んでいます…</div>
+</section>
+<div class="under"><span class="pill"><i></i> <span id="asset-status">画像を読み込み中</span></span><span id="status" aria-live="polite">ロドリンとエイリスの、新しい冒険。</span><span class="pill">P：一時停止 / R：リトライ</span></div>
+<section class="guide"><article><b>01</b><div><h3>歩く、かわす。</h3><p>WASD / 矢印で移動。Spaceで進行方向へダッシュ。ダッシュ中は無敵！</p></div></article><article><b>02</b><div><h3>光を、集める。</h3><p>近くの敵へ自動で魔法を放ちます。倒した敵の結晶に近づいて回収しよう。</p></div></article><article><b>03</b><div><h3>森を、目覚めさせる。</h3><p>8個集めると守護者が登場。広がる魔法弾を避け、森に光を取り戻そう。</p></div></article></section>
+<div class="touch"><button data-key="ArrowUp">↑</button><button data-key="ArrowLeft">←</button><button data-key="ArrowDown">↓</button><button data-key="ArrowRight">→</button><button id="dash-touch">回避 ✦</button></div>
+<footer><span>CRAFTED WITH AILIS & RODORIN</span><span>背景・守護者画：ローカルComfyUI生成 / キャラクター・演出：Canvas描画</span></footer>
+</main>
+<script src="engine.js"></script><script src="game.js"></script>
+</body></html>

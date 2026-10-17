@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SPACE HUNTER — 宇宙型3Dアクション</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 100%; height: 100%; overflow: hidden; background: #05060f; }
+  body {
+    font-family: "Segoe UI", "Hiragino Kaku Gothic ProN", "Yu Gothic", system-ui, sans-serif;
+    color: #eaf4ff;
+    -webkit-user-select: none; user-select: none;
+  }
+  canvas { display: block; }
+
+  /* ---------- HUD ---------- */
+  #hud {
+    position: fixed; inset: 0;
+    pointer-events: none;
+    z-index: 10;
+  }
+  .panel {
+    position: absolute;
+    background: rgba(8, 14, 30, 0.55);
+    border: 1px solid rgba(120, 200, 255, 0.25);
+    border-radius: 10px;
+    padding: 10px 14px;
+    backdrop-filter: blur(6px);
+    box-shadow: 0 0 22px rgba(40, 120, 255, 0.15) inset;
+  }
+  #hpWrap { top: 18px; left: 18px; width: 280px; }
+  #hpLabel {
+    font-size: 11px; letter-spacing: 2px; opacity: 0.75; margin-bottom: 6px;
+  }
+  #hpBar {
+    width: 100%; height: 14px; border-radius: 7px;
+    background: rgba(255,255,255,0.08); overflow: hidden;
+  }
+  #hp {
+    width: 100%; height: 100%;
+    background: linear-gradient(90deg, #38f0ff, #7affc4);
+    transition: width 0.15s ease, background 0.3s ease;
+  }
+  #stats {
+    top: 18px; right: 18px; text-align: right; min-width: 160px;
+  }
+  #stats .row { display: flex; justify-content: space-between; gap: 18px; font-size: 13px; padding: 2px 0; }
+  #stats .k { opacity: 0.7; letter-spacing: 1px; }
+  #stats .v { font-weight: 700; color: #8fffff; }
+  #hint {
+    bottom: 16px; left: 50%; transform: translateX(-50%);
+    font-size: 12px; opacity: 0.6; white-space: nowrap;
+  }
+  #crosshair {
+    position: fixed; left: 50%; top: 50%;
+    width: 22px; height: 22px; margin: -11px 0 0 -11px;
+    z-index: 9; pointer-events: none; opacity: 0.55;
+  }
+  #crosshair::before, #crosshair::after {
+    content: ""; position: absolute; background: #7affff;
+  }
+  #crosshair::before { left: 50%; top: 0; width: 2px; height: 100%; margin-left: -1px; }
+  #crosshair::after  { top: 50%; left: 0; height: 2px; width: 100%; margin-top: -1px; }
+
+  /* ---------- バナー ---------- */
+  #banner {
+    position: fixed; left: 50%; top: 24%;
+    transform: translate(-50%, -50%) scale(0.9);
+    font-size: 46px; font-weight: 800; letter-spacing: 4px;
+    color: #aef6ff;
+    text-shadow: 0 0 24px rgba(80, 220, 255, 0.8), 0 0 60px rgba(80, 160, 255, 0.5);
+    opacity: 0; transition: opacity 0.35s ease, transform 0.35s ease;
+    pointer-events: none; z-index: 20;
+  }
+  #banner.show { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+
+  /* ---------- オーバーレイ ---------- */
+  #overlay {
+    position: fixed; inset: 0; z-index: 30;
+    display: flex; align-items: center; justify-content: center;
+    background: radial-gradient(ellipse at center, rgba(10,18,40,0.55), rgba(3,4,10,0.9));
+    opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+  }
+  #overlay.show { opacity: 1; pointer-events: auto; }
+  #card {
+    text-align: center;
+    padding: 36px 48px;
+    border-radius: 18px;
+    background: rgba(10, 16, 34, 0.75);
+    border: 1px solid rgba(120, 200, 255, 0.3);
+    box-shadow: 0 0 60px rgba(50, 140, 255, 0.25);
+    max-width: 520px;
+  }
+  #ovTitle {
+    font-size: 40px; font-weight: 800; letter-spacing: 6px;
+    color: #aef6ff;
+    text-shadow: 0 0 24px rgba(80, 220, 255, 0.7);
+    margin-bottom: 14px;
+  }
+  #ovText { font-size: 15px; line-height: 1.9; opacity: 0.85; margin-bottom: 26px; }
+  #ovText b { color: #8fffff; }
+  #ovBtn {
+    font: inherit; font-size: 17px; font-weight: 700; letter-spacing: 2px;
+    color: #04121a;
+    background: linear-gradient(90deg, #38f0ff, #7affc4);
+    border: none; border-radius: 10px;
+    padding: 14px 44px; cursor: pointer;
+    box-shadow: 0 0 30px rgba(60, 220, 255, 0.45);
+    transition: transform 0.15s ease, box-shadow 0.2s ease;
+  }
+  #ovBtn:hover { transform: translateY(-2px); box-shadow: 0 0 42px rgba(60, 220, 255, 0.7); }
+  #boot {
+    position: fixed; inset: 0; z-index: 40;
+    display: flex; align-items: center; justify-content: center;
+    background: #05060f; font-size: 15px; line-height: 1.8; text-align: center;
+  }
+</style>
+</head>
+<body>
+  <div id="boot">起動中です…🚀</div>
+
+  <div id="hud">
+    <div class="panel" id="hpWrap">
+      <div id="hpLabel">HULL</div>
+      <div id="hpBar"><div id="hp"></div></div>
+    </div>
+    <div class="panel" id="stats">
+      <div class="row"><span class="k">SCORE</span><span class="v" id="score">0</span></div>
+      <div class="row"><span class="k">WAVE</span><span class="v" id="wave">1</span></div>
+    </div>
+    <div class="panel" id="hint">
+      WASD / 矢印 = 移動　•　SPACE / クリック = 射撃　•　SHIFT = ブースト　•　P = ポーズ
+    </div>
+  </div>
+
+  <div id="crosshair"></div>
+  <div id="banner"></div>
+
+  <div id="overlay" class="show">
+    <div id="card">
+      <div id="ovTitle">SPACE HUNTER</div>
+      <div id="ovText">
+        星のかなたから敵機が迫ってくる。<br>
+        宇宙船を操って撃ち落とせ！<br>
+        <b>WASD/矢印</b> で移動、<b>SPACE/クリック</b> で連射、<b>SHIFT</b> でブースト。
+      </div>
+      <button id="ovBtn">出撃する</button>
+    </div>
+  </div>
+
+  <!-- Three.js（ローカル同梱・オフラインOK / r149 UMD） -->
+  <script src="lib/three.min.js"></script>
+  <script src="game.js"></script>
+  <script>
+    // 起動できたら boot 画面を消す
+    window.addEventListener('load', function () {
+      var b = document.getElementById('boot');
+      if (b && window.THREE) { b.style.display = 'none'; }
+    });
+  </script>
+</body>
+</html>

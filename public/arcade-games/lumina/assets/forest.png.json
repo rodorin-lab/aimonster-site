@@ -1,0 +1,98 @@
+{
+  "created": "2026-10-16T21:23:19.047Z",
+  "prompt_id": "36660054-2f36-4fdb-b5d4-a9e513b04af1",
+  "model": "Counterfeit-V3.0_fp16.safetensors",
+  "source": {
+    "filename": "49606e77-23ea-4e08-b413-deae399ee6e5_00001_.png",
+    "subfolder": "AILIS/lumina",
+    "type": "output"
+  },
+  "workflow": {
+    "1": {
+      "class_type": "CheckpointLoaderSimple",
+      "inputs": {
+        "ckpt_name": "Counterfeit-V3.0_fp16.safetensors"
+      }
+    },
+    "2": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "masterpiece, best quality, fantasy game environment concept art, enchanted ancient forest clearing, wide landscape, moonlit teal blue forest, glowing emerald moss, ancient stone ruins at the edges, tiny golden fireflies, magical atmosphere, detailed painterly anime background, empty clearing in center, no characters",
+        "clip": [
+          "1",
+          1
+        ]
+      }
+    },
+    "3": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "text, watermark, signature, logo, blurry, low quality, photo, people",
+        "clip": [
+          "1",
+          1
+        ]
+      }
+    },
+    "4": {
+      "class_type": "EmptyLatentImage",
+      "inputs": {
+        "width": 768,
+        "height": 512,
+        "batch_size": 1
+      }
+    },
+    "5": {
+      "class_type": "KSampler",
+      "inputs": {
+        "seed": 172026,
+        "steps": 18,
+        "cfg": 7,
+        "sampler_name": "euler",
+        "scheduler": "normal",
+        "denoise": 1,
+        "model": [
+          "1",
+          0
+        ],
+        "positive": [
+          "2",
+          0
+        ],
+        "negative": [
+          "3",
+          0
+        ],
+        "latent_image": [
+          "4",
+          0
+        ]
+      }
+    },
+    "6": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "5",
+          0
+        ],
+        "vae": [
+          "1",
+          2
+        ]
+      }
+    },
+    "7": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "filename_prefix": "AILIS/lumina/49606e77-23ea-4e08-b413-deae399ee6e5",
+        "images": [
+          "6",
+          0
+        ]
+      }
+    }
+  },
+  "bytes": 609749,
+  "output": "forest.png"
+}

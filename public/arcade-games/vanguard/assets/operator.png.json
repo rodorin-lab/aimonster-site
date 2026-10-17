@@ -1,0 +1,98 @@
+{
+  "created": "2026-10-16T22:19:43.020Z",
+  "prompt_id": "2fae29cd-c99a-4732-b7a5-5d986550f779",
+  "model": "Counterfeit-V3.0_fp16.safetensors",
+  "source": {
+    "filename": "0b07efe0-8add-47f9-925a-544676ad9f73_00001_.png",
+    "subfolder": "AILIS/lumina",
+    "type": "output"
+  },
+  "workflow": {
+    "1": {
+      "class_type": "CheckpointLoaderSimple",
+      "inputs": {
+        "ckpt_name": "Counterfeit-V3.0_fp16.safetensors"
+      }
+    },
+    "2": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "masterpiece, best quality, anime portrait of adult female spaceship tactical officer, short silver bob hair, teal eyes, navy military pilot uniform, communication headset, professional calm expression, cockpit teal monitor lighting, science fiction visual novel character portrait, no text",
+        "clip": [
+          "1",
+          1
+        ]
+      }
+    },
+    "3": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "text, watermark, logo, child, blurry, low quality, extra limbs",
+        "clip": [
+          "1",
+          1
+        ]
+      }
+    },
+    "4": {
+      "class_type": "EmptyLatentImage",
+      "inputs": {
+        "width": 512,
+        "height": 512,
+        "batch_size": 1
+      }
+    },
+    "5": {
+      "class_type": "KSampler",
+      "inputs": {
+        "seed": 172202,
+        "steps": 22,
+        "cfg": 7,
+        "sampler_name": "euler",
+        "scheduler": "normal",
+        "denoise": 1,
+        "model": [
+          "1",
+          0
+        ],
+        "positive": [
+          "2",
+          0
+        ],
+        "negative": [
+          "3",
+          0
+        ],
+        "latent_image": [
+          "4",
+          0
+        ]
+      }
+    },
+    "6": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "5",
+          0
+        ],
+        "vae": [
+          "1",
+          2
+        ]
+      }
+    },
+    "7": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "filename_prefix": "AILIS/lumina/0b07efe0-8add-47f9-925a-544676ad9f73",
+        "images": [
+          "6",
+          0
+        ]
+      }
+    }
+  },
+  "bytes": 432409,
+  "output": "operator.png"
+}

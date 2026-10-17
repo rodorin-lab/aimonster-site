@@ -1,0 +1,98 @@
+{
+  "created": "2026-10-16T22:19:40.983Z",
+  "prompt_id": "6749ced8-5355-4289-b5c4-b31d8b2d404a",
+  "model": "Counterfeit-V3.0_fp16.safetensors",
+  "source": {
+    "filename": "33de6d3e-2356-455f-8048-1ce77deda030_00001_.png",
+    "subfolder": "AILIS/lumina",
+    "type": "output"
+  },
+  "workflow": {
+    "1": {
+      "class_type": "CheckpointLoaderSimple",
+      "inputs": {
+        "ckpt_name": "Counterfeit-V3.0_fp16.safetensors"
+      }
+    },
+    "2": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "masterpiece, best quality, enormous original armored quadruped siege robot, four mechanical spider legs, heavy twin artillery cannons, orange glowing reactor core, black iron armor, rain swept industrial harbor, cinematic anime mecha illustration, no humans, no text",
+        "clip": [
+          "1",
+          1
+        ]
+      }
+    },
+    "3": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "text, watermark, logo, human, woman, organic, blurry, low quality",
+        "clip": [
+          "1",
+          1
+        ]
+      }
+    },
+    "4": {
+      "class_type": "EmptyLatentImage",
+      "inputs": {
+        "width": 768,
+        "height": 512,
+        "batch_size": 1
+      }
+    },
+    "5": {
+      "class_type": "KSampler",
+      "inputs": {
+        "seed": 172201,
+        "steps": 22,
+        "cfg": 7,
+        "sampler_name": "euler",
+        "scheduler": "normal",
+        "denoise": 1,
+        "model": [
+          "1",
+          0
+        ],
+        "positive": [
+          "2",
+          0
+        ],
+        "negative": [
+          "3",
+          0
+        ],
+        "latent_image": [
+          "4",
+          0
+        ]
+      }
+    },
+    "6": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "5",
+          0
+        ],
+        "vae": [
+          "1",
+          2
+        ]
+      }
+    },
+    "7": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "filename_prefix": "AILIS/lumina/33de6d3e-2356-455f-8048-1ce77deda030",
+        "images": [
+          "6",
+          0
+        ]
+      }
+    }
+  },
+  "bytes": 623209,
+  "output": "siege.png"
+}

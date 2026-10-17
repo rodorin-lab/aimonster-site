@@ -1,0 +1,98 @@
+{
+  "created": "2026-10-16T22:02:51.952Z",
+  "prompt_id": "79bd81a9-718e-4e63-911e-113b7d0eeb25",
+  "model": "Counterfeit-V3.0_fp16.safetensors",
+  "source": {
+    "filename": "aaaa10ae-4db3-4c38-9297-b71d22c629f5_00001_.png",
+    "subfolder": "AILIS/lumina",
+    "type": "output"
+  },
+  "workflow": {
+    "1": {
+      "class_type": "CheckpointLoaderSimple",
+      "inputs": {
+        "ckpt_name": "Counterfeit-V3.0_fp16.safetensors"
+      }
+    },
+    "2": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "masterpiece, best quality, cinematic anime mecha key visual, original white and dark navy armored humanoid combat robot, angular mechanical armor, cyan glowing visor, shoulder missile pods, massive rifle, standing in rainy industrial ruined city at night, orange sparks, blue thrusters, dramatic low angle, detailed hard surface, science fiction, no humans, no text",
+        "clip": [
+          "1",
+          1
+        ]
+      }
+    },
+    "3": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "text, logo, watermark, human, girl, face, organic, blurry, low quality, deformed",
+        "clip": [
+          "1",
+          1
+        ]
+      }
+    },
+    "4": {
+      "class_type": "EmptyLatentImage",
+      "inputs": {
+        "width": 768,
+        "height": 512,
+        "batch_size": 1
+      }
+    },
+    "5": {
+      "class_type": "KSampler",
+      "inputs": {
+        "seed": 172100,
+        "steps": 22,
+        "cfg": 7,
+        "sampler_name": "euler",
+        "scheduler": "normal",
+        "denoise": 1,
+        "model": [
+          "1",
+          0
+        ],
+        "positive": [
+          "2",
+          0
+        ],
+        "negative": [
+          "3",
+          0
+        ],
+        "latent_image": [
+          "4",
+          0
+        ]
+      }
+    },
+    "6": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "5",
+          0
+        ],
+        "vae": [
+          "1",
+          2
+        ]
+      }
+    },
+    "7": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "filename_prefix": "AILIS/lumina/aaaa10ae-4db3-4c38-9297-b71d22c629f5",
+        "images": [
+          "6",
+          0
+        ]
+      }
+    }
+  },
+  "bytes": 608729,
+  "output": "vanguard.png"
+}
