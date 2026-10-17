@@ -16,6 +16,7 @@ Screenshots are local in `test-artifacts/`: neon-desktop.png, neon-mobile.png, a
 
 ## Known limits
 
+- Dependency audit (`npm audit --omit=dev`) reports 19 advisories: 6 moderate, 9 high and 4 critical, including Next.js and Auth.js-related dependency entries. These counts are advisory reports, not proof of exploitability of every deployed route. Dependencies were not changed in this visual/game update. Keep the preview protected and review framework/auth updates before production promotion; do not run an automatic force-upgrade against live checkout/authentication.
 - Full-game completion, all missions, all touchscreen gameplay, gamepad controls and actual Quest performance are not verified.
 - No immersive WebXR implementation is claimed.
 - Global `npm run lint -- --quiet` fails on pre-existing files, including membership render-time `Date.now()` and other existing hook rules. Those files were left unchanged.
