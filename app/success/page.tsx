@@ -13,16 +13,19 @@ function SuccessInner() {
   const { t } = useLang();
   const params = useSearchParams();
   const sessionId = params.get("session_id");
-  const [state, setState] = useState<"checking" | "paid" | "unpaid" | "error">("checking");
+  const [verificationState, setState] = useState<"checking" | "paid" | "unpaid" | "error">("checking");
+  const state = sessionId ? verificationState : "error";
+  const [delivery, setDelivery] = useState("pending");
   const [productId, setProductId] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!sessionId) { setState("error"); return; }
+    if (!sessionId) return;
     fetch(`/api/verify?session_id=${encodeURIComponent(sessionId)}`)
       .then((r) => r.json())
       .then((d) => {
         if (d.error) { setState("error"); return; }
         setProductId(d.productId);
+        setDelivery(d.delivery);
         setState(d.paid ? "paid" : "unpaid");
       })
       .catch(() => setState("error"));
@@ -46,7 +49,7 @@ function SuccessInner() {
                     : t(bi("Your purchase is confirmed.", "ご購入が確認できました。"))}
                 </p>
                 <p className="font-mono" style={{ fontSize: "0.8rem", color: "var(--text-faint)" }}>
-                  {t(bi("A download link will be emailed to you shortly.", "ダウンロードリンクはメールにて追ってお送りします。"))}
+                  {t(delivery === "email_sent" ? bi("Your download email has been accepted for sending. Please check your inbox and spam folder.", "ダウンロードメールの送信を受け付けました。受信箱と迷惑メールをご確認ください。") : bi("Delivery is being prepared. If no email arrives, contact support with your Stripe receipt. Please do not pay again.", "配布を準備中です。メールが届かない場合はStripeの領収書を添えてサポートへご連絡ください。再購入は不要です。"))}
                 </p>
               </>
             )}

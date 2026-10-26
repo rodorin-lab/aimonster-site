@@ -21,7 +21,7 @@ const faq = [
   { q: bi("What if the download link breaks?", "ダウンロードリンクが切れたら？"), a: bi("Email support within 30 days of purchase, and we'll fix it.", "購入後30日以内にメールでご連絡いただければ対応します。") },
 ];
 
-export default function PackDetail({ pack }: { pack: Pack }) {
+export default function PackDetail({ pack, available }: { pack: Pack; available: boolean }) {
   const { t } = useLang();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -31,7 +31,7 @@ export default function PackDetail({ pack }: { pack: Pack }) {
   const relatedStory = linkedCreatures.length === 1 ? findStory(`the-day-${linkedCreatures[0]!.slug}-was-born`) : undefined;
 
   const buy = async () => {
-    if (!pack.checkoutId) return;
+    if (!available) return;
     setLoading(true); setError(null);
     try {
       const res = await fetch("/api/checkout", {
@@ -72,12 +72,12 @@ export default function PackDetail({ pack }: { pack: Pack }) {
             <div className="font-display neon" style={{ fontSize: "2rem", fontWeight: 800, marginBottom: 18 }}>
               {pack.priceUsd > 0 ? `$${pack.priceUsd.toFixed(2).replace(/\.00$/, "")}` : t({ en: "Not sold yet", ja: "まだ販売していません" })}
             </div>
-            {pack.checkoutId ? (
+            {available ? (
               <button className="btn btn-solid" onClick={buy} disabled={loading} style={{ cursor: loading ? "wait" : "pointer" }}>
                 {loading ? t({ en: "Redirecting…", ja: "リダイレクト中…" }) : `▸ ${t({ en: "Buy Now", ja: "今すぐ購入" })}`}
               </button>
             ) : (
-              <span className="chip">{t({ en: "COMING WITH PHASE 4", ja: "Phase 4で提供予定" })}</span>
+              <span className="chip">{t({ en: "NOT AVAILABLE FOR PURCHASE YET", ja: "販売準備中" })}</span>
             )}
             {error && <p style={{ color: "var(--orange)", fontSize: "0.85rem", marginTop: 10 }}>{error}</p>}
           </div>
@@ -175,7 +175,7 @@ export default function PackDetail({ pack }: { pack: Pack }) {
         </Reveal>
 
         {/* BUY (bottom) */}
-        {pack.checkoutId && (
+        {available && (
           <Reveal>
             <div style={{ textAlign: "center", marginTop: "2rem" }}>
               <button className="btn btn-solid" onClick={buy} disabled={loading} style={{ cursor: loading ? "wait" : "pointer" }}>

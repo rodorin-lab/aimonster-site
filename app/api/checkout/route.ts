@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { findPack } from "@/lib/packs";
 import { SUBSCRIPTION_PRICING, type PaidRank } from "@/lib/rank";
 import { getStripe, siteUrl } from "@/lib/stripe";
+import { commerceConfigured, readRelease } from "@/lib/delivery";
+import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 
 type PackBody = { kind?: "pack"; product_id: string };
@@ -13,6 +15,10 @@ export async function POST(req: Request) {
     body = await req.json();
   } catch {
     return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+  }
+
+  if (!body || typeof body !== "object") {
+    return NextResponse.json({ error: "Invalid request" }, { status: 400 });
   }
 
   let stripe;
@@ -80,6 +86,16 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "This product is not available for purchase yet." }, { status: 400 });
   }
 
+  let deliverySha256: string;
+  // Fail closed before creating any payable Stripe session.
+  try {
+    if (!commerceConfigured()) throw new Error("Commerce unavailable");
+    deliverySha256 = (await readRelease(pack.slug)).sha256;
+    await prisma.purchase.findFirst({ select: { stripeSessionId: true, deliverySha256: true } }); // Migration/DB connectivity preflight.
+  } catch {
+    return NextResponse.json({ error: "販売準備中です。This pack is not available for purchase yet." }, { status: 503 });
+  }
+
   const origin =
     typeof pack.image === "string" && pack.image.startsWith("/")
       ? `${base}${pack.image}`
@@ -108,7 +124,7 @@ export async function POST(req: Request) {
       success_url: `${base}/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${base}/packs/${pack.slug}`,
       allow_promotion_codes: true,
-      metadata: { product_id: pack.checkoutId, userId: authSession?.user?.id || "", source: "aimonster-factory-v2" },
+      metadata: { delivery_sha256: deliverySha256, product_id: pack.checkoutId, userId: authSession?.user?.id || "", source: "aimonster-factory-v2" },
     });
 
     return NextResponse.json({ url: checkout.url });
