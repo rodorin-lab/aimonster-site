@@ -43,4 +43,4 @@ Tests cover sale gating, Vercel rejection, approved-file integrity/path checks, 
 
 Additional checks: purchase-email tests mock HTTP only (no mail was sent); TypeScript and targeted ESLint checks passed after dependency installation. Stripe/Resend/database credentials are absent from this execution environment, so real Stripe test checkout and inbox receipt remain unverified.
 
-Production build attempt: blocked while fetching the existing Google Fonts (TLS/network failure for Chakra Petch, Geist, Geist Mono and Orbitron). No product/brand fonts were changed to hide this infrastructure failure.
+Production build: initial attempt failed fetching the existing Google Fonts over TLS. Retrying with `NEXT_TURBOPACK_EXPERIMENTAL_USE_SYSTEM_TLS_CERTS=1 npm run build` succeeded, including TypeScript and generation of all 51 pages. No product/brand fonts were changed.
