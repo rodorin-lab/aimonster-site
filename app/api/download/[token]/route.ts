@@ -1,14 +1,10 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { findPack } from "@/lib/packs";
+import { readRelease } from "@/lib/delivery";
 
-// Honest delivery: there is no packaged-zip pipeline built yet, so instead
-// of faking one, this resolves the token to the actual pack and redirects
-// to its real static asset (the same image already shown on the pack page).
-// Once a real asset-bundling pipeline exists, swap the redirect target for
-// a generated zip without changing this route's URL or token contract.
 export async function GET(_req: Request, { params }: { params: Promise<{ token: string }> }) {
   const { token } = await params;
+  if (!/^[a-f0-9]{48}$/.test(token)) return NextResponse.json({ error: "Invalid token" }, { status: 404 });
   const purchase = await prisma.purchase.findFirst({ where: { downloadToken: token, status: "succeeded" } });
   if (!purchase) {
     return NextResponse.json({ error: "Invalid or unknown download token." }, { status: 404 });
@@ -16,9 +12,16 @@ export async function GET(_req: Request, { params }: { params: Promise<{ token: 
   if (purchase.downloadExpiresAt && purchase.downloadExpiresAt < new Date()) {
     return NextResponse.json({ error: "This download link has expired." }, { status: 410 });
   }
-  const pack = findPack(purchase.packSlug);
-  if (!pack) {
-    return NextResponse.json({ error: "Pack no longer exists." }, { status: 404 });
+  try {
+    const { bytes, filename } = await readRelease(purchase.packSlug, purchase.deliverySha256);
+    return new Response(new Uint8Array(bytes), { headers: {
+      "Content-Type": "application/zip",
+      "Content-Disposition": `attachment; filename="${filename}"`,
+      "Cache-Control": "private, no-store",
+      "Referrer-Policy": "no-referrer",
+      "X-Content-Type-Options": "nosniff",
+    } });
+  } catch {
+    return NextResponse.json({ error: "Delivery is temporarily unavailable. Please contact support with your Stripe receipt." }, { status: 503 });
   }
-  return NextResponse.redirect(new URL(pack.image, _req.url));
 }

@@ -52,3 +52,26 @@ export async function sendRankUpEmail(email: string, rankLabel: string): Promise
     `<p>Your rank just changed to <strong>${rankLabel}</strong>. Thank you for being part of the lab.</p>`,
   );
 }
+
+// Purchase delivery is mandatory and must throw on failure so Stripe retries.
+export async function sendPurchaseEmail(email: string, token: string, sessionId: string) {
+  const base = process.env.NEXT_PUBLIC_SITE_URL;
+  if (!process.env.RESEND_API_KEY || !process.env.RESEND_FROM_EMAIL || !base?.startsWith("https://")) {
+    throw new Error("Purchase email is not configured");
+  }
+  const url = new URL(`/api/download/${encodeURIComponent(token)}`, base).href;
+  const res = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+      "Content-Type": "application/json",
+      "Idempotency-Key": `purchase/${sessionId}`,
+    },
+    body: JSON.stringify({
+      from: process.env.RESEND_FROM_EMAIL, to: email,
+      subject: "Your download — AI MONSTER FACTORY",
+      text: `Thank you for your purchase. Download your pack (link valid for 30 days):\n${url}\nご購入ありがとうございます。上記リンクから商品をダウンロードできます（30日間有効）。`,
+    }),
+  });
+  if (!res.ok) throw new Error(`Purchase email rejected (${res.status})`);
+}

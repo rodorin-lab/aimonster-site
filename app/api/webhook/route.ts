@@ -1,13 +1,14 @@
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
-import crypto from "node:crypto";
+import { fulfillPack } from "@/lib/fulfillment";
 import { prisma } from "@/lib/prisma";
 import { RANK_UP_MESSAGE, getRankBenefits, type Rank } from "@/lib/rank";
 import { sendRankUpEmail } from "@/lib/email";
 
 // Verifies the Stripe webhook signature, then genuinely persists results:
-// one-time pack purchases become Purchase rows with a real download token
-// (see /api/download/[token]); subscription events create/update a
+// paid guest/member pack purchases are idempotently persisted and emailed;
+// missing files or email failures surface as 5xx so Stripe retries.
+// Subscription events create/update a
 // Subscription row and update the user's rank, with a RankEvent audit row
 // and a Synchro-voice congratulation email (spec Part 1.7 / 11.4).
 
@@ -34,25 +35,12 @@ export async function POST(req: Request) {
   }
 
   switch (event.type) {
-    case "checkout.session.completed": {
+    case "checkout.session.completed":
+    case "checkout.session.async_payment_succeeded": {
       const session = event.data.object as Stripe.Checkout.Session;
 
       if (session.mode === "payment" && session.metadata?.product_id) {
-        const userId = session.metadata.userId || null;
-        if (userId) {
-          await prisma.purchase.create({
-            data: {
-              userId,
-              packSlug: session.metadata.product_id,
-              stripePaymentId: typeof session.payment_intent === "string" ? session.payment_intent : null,
-              amountCents: session.amount_total || 0,
-              currency: session.currency || "usd",
-              status: "succeeded",
-              downloadToken: crypto.randomBytes(24).toString("hex"),
-              downloadExpiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30), // 30 days
-            },
-          });
-        }
+        await fulfillPack(session);
       }
 
       if (session.mode === "subscription" && session.metadata?.userId) {
@@ -67,6 +55,17 @@ export async function POST(req: Request) {
       const userId = sub.metadata?.userId;
       if (userId) {
         await upsertSubscriptionFromStripe(stripe, userId, sub.id, sub.customer as string, sub);
+      }
+      break;
+    }
+
+    case "charge.refunded": {
+      const charge = event.data.object as Stripe.Charge;
+      if (charge.refunded && typeof charge.payment_intent === "string") {
+        await prisma.purchase.updateMany({
+          where: { stripePaymentId: charge.payment_intent },
+          data: { status: "refunded", downloadToken: null },
+        });
       }
       break;
     }

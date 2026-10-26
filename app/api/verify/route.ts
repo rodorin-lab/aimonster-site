@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
 import Stripe from "stripe";
 
 // Confirms a checkout session actually completed payment — used by the
@@ -20,10 +21,12 @@ export async function GET(req: Request) {
   const stripe = new Stripe(key);
   try {
     const session = await stripe.checkout.sessions.retrieve(sessionId);
+    const purchase = await prisma.purchase.findUnique({ where: { stripeSessionId: session.id } });
     return NextResponse.json({
-      paid: session.payment_status === "paid",
+      delivery: purchase?.deliveryEmailSentAt ? "email_sent" : "pending",
+      paid: ["paid", "no_payment_required"].includes(session.payment_status),
       productId: session.metadata?.product_id ?? null,
-    });
+    }, { headers: { "Cache-Control": "private, no-store", "Referrer-Policy": "no-referrer" } });
   } catch (err) {
     console.error("Session verification failed:", err);
     return NextResponse.json({ error: "Could not verify session." }, { status: 500 });

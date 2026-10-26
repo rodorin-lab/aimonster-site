@@ -100,17 +100,21 @@ model Favorite {
 
 model Purchase {
   id                String    @id @default(cuid())
-  userId            String
+  userId            String?
+  buyerEmail        String?
+  stripeSessionId   String?   @unique
+  deliverySha256    String?
+  deliveryEmailSentAt DateTime?
   packSlug          String
   stripePaymentId   String?
   amountCents       Int
   currency          String    @default("usd")
   status            String // succeeded / pending / failed / refunded
-  downloadToken     String?
+  downloadToken     String?   @unique
   downloadExpiresAt DateTime?
   createdAt         DateTime  @default(now())
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 // ── Community ───────────────────────────────────────────────────

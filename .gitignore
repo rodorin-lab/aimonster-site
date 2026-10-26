@@ -12,3 +12,7 @@ next-env.d.ts
 /prisma/dev.db
 /prisma/dev.db-journal
 /prisma/generated
+
+# Private paid deliverables and local compiler cache
+/private/packs/
+*.tsbuildinfo
